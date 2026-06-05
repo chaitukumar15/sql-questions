@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 SQL Interview Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --card: #11141b;
+    --border: #1e2430;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --easy: #00c896;
+    --medium: #f5a623;
+    --hard: #ff4d6d;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .subtitle { color: var(--muted); font-size: 16px; font-weight: 400; max-width: 520px; margin: 0 auto 32px; line-height: 1.6; }
+
+  /* Stats bar */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .stat {
+    text-align: center;
+    padding: 16px 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .stat-num { font-size: 32px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .stat-label { font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .stat-num.e { color: var(--easy); }
+  .stat-num.m { color: var(--medium); }
+  .stat-num.h { color: var(--hard); }
+  .stat-num.t { color: var(--accent); }
+
+  /* Filter bar */
+  .filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    align-items: center;
+  }
+  .filter-label { color: var(--muted); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-right: 8px; }
+  .filter-btn {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.07); }
+  .filter-btn.easy.active { border-color: var(--easy); color: var(--easy); background: rgba(0,200,150,0.07); }
+  .filter-btn.medium.active { border-color: var(--medium); color: var(--medium); background: rgba(245,166,35,0.07); }
+  .filter-btn.hard.active { border-color: var(--hard); color: var(--hard); background: rgba(255,77,109,0.07); }
+
+  .search-wrap { margin-left: auto; }
+  .search {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 8px 16px;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--muted); }
+
+  /* Section heading */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 48px 0 20px;
+  }
+  .section-head h2 { font-size: 18px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+  .section-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+  .pill-easy { background: rgba(0,200,150,0.15); color: var(--easy); }
+  .pill-medium { background: rgba(245,166,35,0.12); color: var(--medium); }
+  .pill-hard { background: rgba(255,77,109,0.12); color: var(--hard); }
+
+  /* Question card */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+    animation: fadeUp 0.3s ease both;
+  }
+  .q-card:hover { border-color: #2a3142; transform: translateY(-1px); }
+  .q-card.easy:hover { border-left: 3px solid var(--easy); }
+  .q-card.medium:hover { border-left: 3px solid var(--medium); }
+  .q-card.hard:hover { border-left: 3px solid var(--hard); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 36px;
+    padding-top: 2px;
+  }
+  .q-text { flex: 1; font-size: 15px; font-weight: 600; line-height: 1.5; }
+  .q-difficulty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+  .diff-easy { background: rgba(0,200,150,0.15); color: var(--easy); }
+  .diff-medium { background: rgba(245,166,35,0.12); color: var(--medium); }
+  .diff-hard { background: rgba(255,77,109,0.12); color: var(--hard); }
+
+  .q-chevron {
+    color: var(--muted);
+    transition: transform 0.25s;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .q-card.open .q-chevron { transform: rotate(180deg); }
+
+  .q-answer {
+    display: none;
+    padding: 0 20px 20px 70px;
+    border-top: 1px solid var(--border);
+  }
+  .q-card.open .q-answer { display: block; }
+
+  .q-answer p { color: #a0aec0; font-size: 14px; line-height: 1.75; margin-bottom: 12px; }
+  .q-answer code {
+    display: block;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #7dd3fc;
+    overflow-x: auto;
+    margin-top: 10px;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  .kw { color: #c084fc; }
+  .fn { color: #34d399; }
+  .str { color: #fbbf24; }
+  .cm { color: #475569; font-style: italic; }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+  .progress-track { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--easy), var(--accent)); border-radius: 4px; width: 0%; transition: width 0.4s ease; }
+
+  .no-results { text-align: center; padding: 60px 20px; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+
+  /* Topic tags */
+  .topic-tag {
+    display: inline-block;
+    background: rgba(255,107,53,0.1);
+    border: 1px solid rgba(255,107,53,0.2);
+    color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-right: 6px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="badge">Interview Prep · SQL Mastery</div>
+    <h1>100 SQL Questions</h1>
+    <p class="subtitle">Curated to cover 90% of what interviewers actually ask — from basics to expert-level query optimization.</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num t">100</div><div class="stat-label">Total Questions</div></div>
+    <div class="stat"><div class="stat-num e">38</div><div class="stat-label">Easy</div></div>
+    <div class="stat"><div class="stat-num m">37</div><div class="stat-label">Medium</div></div>
+    <div class="stat"><div class="stat-num h">25</div><div class="stat-label">Hard</div></div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>Questions Reviewed</span>
+      <span id="progress-text">0 / 100</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div class="filters">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="filter('all',this)">All</button>
+    <button class="filter-btn easy" onclick="filter('easy',this)">Easy</button>
+    <button class="filter-btn medium" onclick="filter('medium',this)">Medium</button>
+    <button class="filter-btn hard" onclick="filter('hard',this)">Hard</button>
+    <div class="search-wrap">
+      <input class="search" type="text" placeholder="Search questions..." oninput="search(this.value)" id="searchInput">
+    </div>
+  </div>
+
+  <div id="questions-container"></div>
+</div>
+
+<script>
+const questions = [
+  // ─── EASY ───────────────────────────────────────────────
+  { id:1, text:"What is SQL and what are its main categories?", diff:"easy", topic:"Basics",
+    answer:"SQL (Structured Query Language) is used to manage relational databases. Its main categories are: DDL (CREATE, ALTER, DROP), DML (SELECT, INSERT, UPDATE, DELETE), DCL (GRANT, REVOKE), and TCL (COMMIT, ROLLBACK, SAVEPOINT).", code:"" },
+
+  { id:2, text:"What is the difference between WHERE and HAVING?", diff:"easy", topic:"Filtering",
+    answer:"WHERE filters rows BEFORE grouping. HAVING filters groups AFTER GROUP BY aggregation.",
+    code:`<span class="kw">SELECT</span> department, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> emp_count
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary &gt; 30000          <span class="cm">-- filters rows first</span>
+<span class="kw">GROUP BY</span> department
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) &gt; 5;          <span class="cm">-- filters groups after</span>` },
+
+  { id:3, text:"What are the different types of JOINs in SQL?", diff:"easy", topic:"Joins",
+    answer:"INNER JOIN: matching rows in both tables. LEFT JOIN: all left rows + matched right. RIGHT JOIN: all right rows + matched left. FULL OUTER JOIN: all rows from both. CROSS JOIN: cartesian product. SELF JOIN: table joined to itself.",
+    code:`<span class="kw">SELECT</span> e.name, d.dept_name
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.id;` },
+
+  { id:4, text:"What is the difference between DELETE, TRUNCATE, and DROP?", diff:"easy", topic:"DDL/DML",
+    answer:"DELETE: removes specific rows, can be rolled back, triggers fire. TRUNCATE: removes all rows, faster, cannot be rolled back in most DBs, resets identity. DROP: removes the entire table structure and data.", code:"" },
+
+  { id:5, text:"What is a PRIMARY KEY?", diff:"easy", topic:"Constraints",
+    answer:"A PRIMARY KEY uniquely identifies each row in a table. It cannot be NULL and must be unique. A table can have only one primary key (but it can be composite).",
+    code:`<span class="kw">CREATE TABLE</span> employees (
+  id       <span class="fn">INT</span> <span class="kw">PRIMARY KEY</span>,
+  name     <span class="fn">VARCHAR</span>(100) <span class="kw">NOT NULL</span>
+);` },
+
+  { id:6, text:"What is a FOREIGN KEY?", diff:"easy", topic:"Constraints",
+    answer:"A FOREIGN KEY creates a referential integrity link between two tables. It ensures that the value in the child table exists in the parent table's primary key.",
+    code:`<span class="kw">ALTER TABLE</span> orders
+<span class="kw">ADD CONSTRAINT</span> fk_customer
+<span class="kw">FOREIGN KEY</span> (customer_id) <span class="kw">REFERENCES</span> customers(id);` },
+
+  { id:7, text:"What is the difference between CHAR and VARCHAR?", diff:"easy", topic:"Data Types",
+    answer:"CHAR is fixed-length — always uses defined storage (padded with spaces). VARCHAR is variable-length — uses only as much storage as needed. CHAR is slightly faster for fixed-width data; VARCHAR is more space-efficient.", code:"" },
+
+  { id:8, text:"How does GROUP BY work?", diff:"easy", topic:"Aggregation",
+    answer:"GROUP BY collapses rows that share the same value in the specified column(s) into a single row, allowing aggregate functions like COUNT, SUM, AVG, MAX, MIN to be applied per group.",
+    code:`<span class="kw">SELECT</span> department, <span class="fn">AVG</span>(salary) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> department
+<span class="kw">ORDER BY</span> avg_salary <span class="kw">DESC</span>;` },
+
+  { id:9, text:"What is the ORDER BY clause and how does it work?", diff:"easy", topic:"Basics",
+    answer:"ORDER BY sorts query results by one or more columns in ASC (default) or DESC order. Multiple columns can be specified for secondary sorting.",
+    code:`<span class="kw">SELECT</span> name, salary <span class="kw">FROM</span> employees
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>, name <span class="kw">ASC</span>;` },
+
+  { id:10, text:"What is DISTINCT and when do you use it?", diff:"easy", topic:"Basics",
+    answer:"DISTINCT removes duplicate rows from the result set. Use it when you want unique values from one or more columns.",
+    code:`<span class="kw">SELECT DISTINCT</span> department <span class="kw">FROM</span> employees;` },
+
+  { id:11, text:"What are aggregate functions in SQL? Name them.", diff:"easy", topic:"Aggregation",
+    answer:"Aggregate functions compute a single result from a set of values: COUNT() – counts rows, SUM() – total, AVG() – average, MIN() – minimum, MAX() – maximum, STDDEV() / VARIANCE() – statistical functions.", code:"" },
+
+  { id:12, text:"How do you handle NULL values in SQL?", diff:"easy", topic:"Basics",
+    answer:"NULL means unknown/missing. Use IS NULL / IS NOT NULL to check. Use COALESCE() to return a fallback value. Use NULLIF() to return NULL when two values are equal.",
+    code:`<span class="kw">SELECT</span> <span class="fn">COALESCE</span>(manager_id, 0) <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>;` },
+
+  { id:13, text:"What is LIKE and what wildcards does it support?", diff:"easy", topic:"Filtering",
+    answer:"LIKE is used for pattern matching. Wildcards: % (zero or more characters), _ (exactly one character).",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> name <span class="kw">LIKE</span> <span class="str">'A%'</span>;   <span class="cm">-- starts with A</span>` },
+
+  { id:14, text:"What is the difference between UNION and UNION ALL?", diff:"easy", topic:"Set Ops",
+    answer:"UNION combines results of two queries and removes duplicates. UNION ALL combines all results including duplicates (faster). Both require the same number of columns with compatible data types.", code:"" },
+
+  { id:15, text:"What is an INDEX and why is it used?", diff:"easy", topic:"Performance",
+    answer:"An index is a data structure (usually B-tree) that speeds up data retrieval. Indexes make SELECT faster but slow down INSERT/UPDATE/DELETE. Always index columns used in WHERE, JOIN, and ORDER BY.",
+    code:`<span class="kw">CREATE INDEX</span> idx_emp_dept
+<span class="kw">ON</span> employees(department_id);` },
+
+  { id:16, text:"What is a VIEW? How is it different from a table?", diff:"easy", topic:"Views",
+    answer:"A VIEW is a stored SQL query presented as a virtual table. It doesn't store data physically (unless materialized). Views simplify complex queries, restrict data access, and provide a security layer.", code:"" },
+
+  { id:17, text:"Explain the difference between IN and EXISTS.", diff:"easy", topic:"Subqueries",
+    answer:"IN checks if a value matches any value in a list or subquery result. EXISTS returns TRUE if the subquery returns at least one row. EXISTS is generally faster for large datasets because it short-circuits.",
+    code:`<span class="cm">-- IN</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees <span class="kw">WHERE</span> dept_id <span class="kw">IN</span> (1,2,3);
+
+<span class="cm">-- EXISTS</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees e
+<span class="kw">WHERE EXISTS</span> (<span class="kw">SELECT</span> 1 <span class="kw">FROM</span> depts d <span class="kw">WHERE</span> d.id = e.dept_id);` },
+
+  { id:18, text:"What is a SUBQUERY? Name its types.", diff:"easy", topic:"Subqueries",
+    answer:"A subquery is a query nested inside another query. Types: Scalar (returns one value), Row (returns one row), Column (returns one column), Table (returns multiple rows/columns), Correlated (references outer query).", code:"" },
+
+  { id:19, text:"What is the difference between INNER JOIN and LEFT JOIN?", diff:"easy", topic:"Joins",
+    answer:"INNER JOIN returns only rows where there's a match in both tables. LEFT JOIN returns all rows from the left table, and matched rows from the right; unmatched right columns are NULL.", code:"" },
+
+  { id:20, text:"What is a STORED PROCEDURE?", diff:"easy", topic:"Procedures",
+    answer:"A stored procedure is a precompiled set of SQL statements stored in the database and executed as a unit. Benefits: code reuse, better performance (cached execution plan), reduced network traffic, security.",
+    code:`<span class="kw">CREATE PROCEDURE</span> GetEmpByDept(@DeptID <span class="fn">INT</span>)
+<span class="kw">AS BEGIN</span>
+  <span class="kw">SELECT</span> * <span class="kw">FROM</span> employees <span class="kw">WHERE</span> dept_id = @DeptID;
+<span class="kw">END</span>;` },
+
+  { id:21, text:"What is BETWEEN in SQL?", diff:"easy", topic:"Filtering",
+    answer:"BETWEEN filters rows within an inclusive range of values. Works for numbers, dates, and strings.",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary <span class="kw">BETWEEN</span> 50000 <span class="kw">AND</span> 100000;` },
+
+  { id:22, text:"How do you insert multiple rows in a single SQL statement?", diff:"easy", topic:"DML",
+    answer:"",
+    code:`<span class="kw">INSERT INTO</span> employees (name, dept, salary)
+<span class="kw">VALUES</span>
+  (<span class="str">'Alice'</span>, <span class="str">'IT'</span>, 70000),
+  (<span class="str">'Bob'</span>,   <span class="str">'HR'</span>, 55000),
+  (<span class="str">'Carol'</span>, <span class="str">'IT'</span>, 80000);` },
+
+  { id:23, text:"What is CASE WHEN in SQL?", diff:"easy", topic:"Expressions",
+    answer:"CASE WHEN is SQL's conditional expression — like an if/else. It returns different values based on conditions.",
+    code:`<span class="kw">SELECT</span> name,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> salary &gt;= 100000 <span class="kw">THEN</span> <span class="str">'Senior'</span>
+    <span class="kw">WHEN</span> salary &gt;= 60000  <span class="kw">THEN</span> <span class="str">'Mid'</span>
+    <span class="kw">ELSE</span> <span class="str">'Junior'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> level
+<span class="kw">FROM</span> employees;` },
+
+  { id:24, text:"What are constraints in SQL? List them.", diff:"easy", topic:"Constraints",
+    answer:"Constraints enforce rules on data: NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK (custom condition), DEFAULT (default value).", code:"" },
+
+  { id:25, text:"What is a SELF JOIN and when would you use it?", diff:"easy", topic:"Joins",
+    answer:"A SELF JOIN joins a table to itself. Common use: organizational hierarchies (employee → manager) where both are in the same table.",
+    code:`<span class="kw">SELECT</span> e.name <span class="kw">AS</span> employee, m.name <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.id;` },
+
+  { id:26, text:"What does COALESCE do?", diff:"easy", topic:"Functions",
+    answer:"COALESCE returns the first non-NULL value in a list of expressions.",
+    code:`<span class="kw">SELECT</span> <span class="fn">COALESCE</span>(phone, mobile, email, <span class="str">'No Contact'</span>)
+<span class="kw">AS</span> contact <span class="kw">FROM</span> customers;` },
+
+  { id:27, text:"What is the difference between a UNIQUE constraint and a PRIMARY KEY?", diff:"easy", topic:"Constraints",
+    answer:"Both enforce uniqueness. Differences: A table can have multiple UNIQUE constraints but only ONE primary key. PRIMARY KEY columns cannot be NULL; UNIQUE columns can have one NULL (in most databases).", code:"" },
+
+  { id:28, text:"How do you update data using a JOIN (UPDATE with JOIN)?", diff:"easy", topic:"DML",
+    answer:"",
+    code:`<span class="kw">UPDATE</span> e
+<span class="kw">SET</span> e.salary = e.salary * 1.1
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d <span class="kw">ON</span> e.dept_id = d.id
+<span class="kw">WHERE</span> d.name = <span class="str">'Engineering'</span>;` },
+
+  { id:29, text:"What is LIMIT / TOP / ROWNUM used for?", diff:"easy", topic:"Basics",
+    answer:"They restrict the number of rows returned. LIMIT in MySQL/PostgreSQL, TOP in SQL Server, ROWNUM in Oracle (or ROW_NUMBER() for pagination).",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span> <span class="kw">LIMIT</span> 10;` },
+
+  { id:30, text:"What is a NATURAL JOIN?", diff:"easy", topic:"Joins",
+    answer:"A NATURAL JOIN automatically joins tables using all columns with the same name and compatible data types. It's implicit — you don't specify the ON condition. Generally discouraged in production as schema changes break it silently.", code:"" },
+
+  { id:31, text:"What is the difference between REPLACE and INSERT?", diff:"easy", topic:"DML",
+    answer:"INSERT adds a new row. REPLACE (MySQL) first deletes the existing row (if a duplicate key exists) then inserts a new one. It effectively does DELETE + INSERT, which resets AUTO_INCREMENT counters.", code:"" },
+
+  { id:32, text:"Explain the SQL execution order.", diff:"easy", topic:"Basics",
+    answer:"SQL clauses execute in this logical order: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT/TOP. Understanding this explains why you can't use aliases in WHERE.", code:"" },
+
+  { id:33, text:"What is a CROSS JOIN?", diff:"easy", topic:"Joins",
+    answer:"CROSS JOIN returns the cartesian product — every row from the left table paired with every row from the right. 5 × 4 rows = 20 rows. Use carefully; can produce massive result sets.", code:"" },
+
+  { id:34, text:"What is ISNULL / IFNULL / NVL?", diff:"easy", topic:"Functions",
+    answer:"These are database-specific NULL replacement functions. SQL Server: ISNULL(col, 0). MySQL: IFNULL(col, 0). Oracle: NVL(col, 0). All return the second arg if the first is NULL.",
+    code:`<span class="kw">SELECT</span> <span class="fn">ISNULL</span>(bonus, 0) <span class="kw">AS</span> bonus <span class="kw">FROM</span> employees;  <span class="cm">-- SQL Server</span>
+<span class="kw">SELECT</span> <span class="fn">IFNULL</span>(bonus, 0) <span class="kw">AS</span> bonus <span class="kw">FROM</span> employees;  <span class="cm">-- MySQL</span>` },
+
+  { id:35, text:"What is the difference between a Clustered and Non-Clustered Index?", diff:"easy", topic:"Performance",
+    answer:"Clustered index physically sorts the data rows on disk (only one per table — usually the PK). Non-clustered index is a separate structure with pointers to data rows (multiple allowed per table).", code:"" },
+
+  { id:36, text:"How do you count rows with and without NULL?", diff:"easy", topic:"Aggregation",
+    answer:"COUNT(*) counts all rows including NULLs. COUNT(column) counts only non-NULL values in that column.",
+    code:`<span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_rows,
+  <span class="fn">COUNT</span>(manager_id) <span class="kw">AS</span> has_manager
+<span class="kw">FROM</span> employees;` },
+
+  { id:37, text:"What is CONCAT in SQL?", diff:"easy", topic:"Functions",
+    answer:"CONCAT joins two or more strings. In SQL Server you can also use the + operator; in Oracle use ||.",
+    code:`<span class="kw">SELECT</span> <span class="fn">CONCAT</span>(first_name, <span class="str">' '</span>, last_name) <span class="kw">AS</span> full_name
+<span class="kw">FROM</span> employees;` },
+
+  { id:38, text:"What is a TRANSACTION? What are COMMIT and ROLLBACK?", diff:"easy", topic:"TCL",
+    answer:"A transaction is a unit of work that must fully succeed or fully fail (atomicity). COMMIT permanently saves changes. ROLLBACK undoes changes back to the last COMMIT or SAVEPOINT.",
+    code:`<span class="kw">BEGIN TRANSACTION</span>;
+  <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - 500 <span class="kw">WHERE</span> id = 1;
+  <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + 500 <span class="kw">WHERE</span> id = 2;
+<span class="kw">COMMIT</span>;` },
+
+  // ─── MEDIUM ──────────────────────────────────────────────
+  { id:39, text:"What are Window Functions? Give examples.", diff:"medium", topic:"Window Fns",
+    answer:"Window functions perform calculations across a set of rows related to the current row without collapsing them (unlike GROUP BY). Key functions: ROW_NUMBER(), RANK(), DENSE_RANK(), LEAD(), LAG(), SUM() OVER, AVG() OVER.",
+    code:`<span class="kw">SELECT</span> name, salary, department,
+  <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> department <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> dept_rank
+<span class="kw">FROM</span> employees;` },
+
+  { id:40, text:"What is the difference between RANK(), DENSE_RANK(), and ROW_NUMBER()?", diff:"medium", topic:"Window Fns",
+    answer:"All assign a number per ordered result. ROW_NUMBER(): always unique sequential. RANK(): ties get same rank, then skips. DENSE_RANK(): ties get same rank, no gaps. Example with scores 90,90,80: ROW_NUMBER → 1,2,3. RANK → 1,1,3. DENSE_RANK → 1,1,2.",
+    code:`<span class="kw">SELECT</span> name, score,
+  <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) rn,
+  <span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) rk,
+  <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> score <span class="kw">DESC</span>) dr
+<span class="kw">FROM</span> scores;` },
+
+  { id:41, text:"How do you find the Nth highest salary?", diff:"medium", topic:"Classic",
+    answer:"Use DENSE_RANK() for ties, or a correlated subquery. This is one of the most common interview questions.",
+    code:`<span class="cm">-- Using DENSE_RANK (recommended)</span>
+<span class="kw">SELECT</span> salary <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> salary,
+    <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> dr
+  <span class="kw">FROM</span> employees
+) t <span class="kw">WHERE</span> dr = 2;  <span class="cm">-- change 2 to N</span>` },
+
+  { id:42, text:"What is a CTE (Common Table Expression)?", diff:"medium", topic:"CTE",
+    answer:"A CTE is a temporary named result set defined with WITH. It improves readability, can be referenced multiple times, and supports recursion. It exists only during query execution.",
+    code:`<span class="kw">WITH</span> dept_avg <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> dept_id, <span class="fn">AVG</span>(salary) <span class="kw">AS</span> avg_sal
+  <span class="kw">FROM</span> employees <span class="kw">GROUP BY</span> dept_id
+)
+<span class="kw">SELECT</span> e.name, e.salary, d.avg_sal
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> dept_avg d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> e.salary &gt; d.avg_sal;` },
+
+  { id:43, text:"How do you find duplicate records in a table?", diff:"medium", topic:"Classic",
+    answer:"Group by the column(s) that should be unique and use HAVING COUNT > 1.",
+    code:`<span class="kw">SELECT</span> email, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> cnt
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> email
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) &gt; 1;` },
+
+  { id:44, text:"How do you delete duplicate rows while keeping one?", diff:"medium", topic:"Classic",
+    answer:"Use a CTE with ROW_NUMBER() to identify duplicates, then delete rows where the row number is greater than 1.",
+    code:`<span class="kw">WITH</span> cte <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span>
+    (<span class="kw">PARTITION BY</span> email <span class="kw">ORDER BY</span> id) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> employees
+)
+<span class="kw">DELETE FROM</span> cte <span class="kw">WHERE</span> rn &gt; 1;` },
+
+  { id:45, text:"What are LEAD() and LAG() window functions?", diff:"medium", topic:"Window Fns",
+    answer:"LAG() accesses a value from a previous row in the result set. LEAD() accesses a value from a following row. Both are used to compare a row with its neighbors — very useful for time-series analysis.",
+    code:`<span class="kw">SELECT</span> order_date, revenue,
+  <span class="fn">LAG</span>(revenue, 1)  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> order_date) <span class="kw">AS</span> prev_revenue,
+  <span class="fn">LEAD</span>(revenue, 1) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> order_date) <span class="kw">AS</span> next_revenue
+<span class="kw">FROM</span> sales;` },
+
+  { id:46, text:"What is a Correlated Subquery?", diff:"medium", topic:"Subqueries",
+    answer:"A correlated subquery references a column from the outer query. It executes once per row of the outer query (unlike a regular subquery). Useful but potentially slow on large datasets.",
+    code:`<span class="cm">-- Employees earning above their dept average</span>
+<span class="kw">SELECT</span> name, salary <span class="kw">FROM</span> employees e
+<span class="kw">WHERE</span> salary &gt; (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">FROM</span> employees
+  <span class="kw">WHERE</span> dept_id = e.dept_id
+);` },
+
+  { id:47, text:"What is PIVOT / UNPIVOT in SQL?", diff:"medium", topic:"Transformations",
+    answer:"PIVOT transforms row values into column headers (rows → columns). UNPIVOT does the reverse. Used in reports to reshape data.",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> sales
+<span class="kw">PIVOT</span> (
+  <span class="fn">SUM</span>(revenue)
+  <span class="kw">FOR</span> quarter <span class="kw">IN</span> ([Q1],[Q2],[Q3],[Q4])
+) <span class="kw">AS</span> pvt;` },
+
+  { id:48, text:"How do you calculate a running total?", diff:"medium", topic:"Window Fns",
+    answer:"Use SUM() with an OVER clause and ORDER BY. The frame defaults to ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+    code:`<span class="kw">SELECT</span> order_date, amount,
+  <span class="fn">SUM</span>(amount) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> order_date) <span class="kw">AS</span> running_total
+<span class="kw">FROM</span> orders;` },
+
+  { id:49, text:"What is the difference between a Table and a Materialized View?", diff:"medium", topic:"Views",
+    answer:"A regular view re-executes its query each time it's accessed. A Materialized View stores the query result physically on disk and refreshes periodically. Materialized views are faster to query but may be stale.", code:"" },
+
+  { id:50, text:"What is INTERSECT and EXCEPT (MINUS)?", diff:"medium", topic:"Set Ops",
+    answer:"INTERSECT returns rows that exist in BOTH result sets. EXCEPT (MINUS in Oracle) returns rows in the first set that are NOT in the second. Both require matching column counts and types.",
+    code:`<span class="cm">-- Customers who placed orders AND made returns</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> orders
+<span class="kw">INTERSECT</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> returns;` },
+
+  { id:51, text:"How do you find employees who don't have a manager?", diff:"medium", topic:"Classic",
+    answer:"",
+    code:`<span class="cm">-- Using IS NULL</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> employees <span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>;
+
+<span class="cm">-- Using LEFT JOIN</span>
+<span class="kw">SELECT</span> e.* <span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.id
+<span class="kw">WHERE</span> m.id <span class="kw">IS NULL</span>;` },
+
+  { id:52, text:"What is a Recursive CTE?", diff:"medium", topic:"CTE",
+    answer:"A Recursive CTE references itself to process hierarchical data (org charts, file trees, category trees). It has an anchor member (base case) and a recursive member joined with UNION ALL.",
+    code:`<span class="kw">WITH RECURSIVE</span> org <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> id, name, manager_id, 1 <span class="kw">AS</span> lvl
+  <span class="kw">FROM</span> employees <span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>
+  <span class="kw">UNION ALL</span>
+  <span class="kw">SELECT</span> e.id, e.name, e.manager_id, o.lvl+1
+  <span class="kw">FROM</span> employees e <span class="kw">JOIN</span> org o <span class="kw">ON</span> e.manager_id = o.id
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> org;` },
+
+  { id:53, text:"How do you get the second-highest salary without using TOP/LIMIT?", diff:"medium", topic:"Classic",
+    answer:"",
+    code:`<span class="kw">SELECT</span> <span class="fn">MAX</span>(salary) <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary &lt; (<span class="kw">SELECT</span> <span class="fn">MAX</span>(salary) <span class="kw">FROM</span> employees);` },
+
+  { id:54, text:"What is the difference between JOIN and subquery? When to prefer which?", diff:"medium", topic:"Performance",
+    answer:"JOINs are generally faster and more readable for combining tables. Subqueries are useful for single-value lookups, filtering with aggregates, or when the query reads more naturally. The optimizer often rewrites them equivalently, but JOINs give the optimizer more flexibility.", code:"" },
+
+  { id:55, text:"How do you implement pagination in SQL?", diff:"medium", topic:"Basics",
+    answer:"",
+    code:`<span class="cm">-- MySQL/PostgreSQL: Page 3, 10 rows per page</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> products
+<span class="kw">ORDER BY</span> id
+<span class="kw">LIMIT</span> 10 <span class="kw">OFFSET</span> 20;
+
+<span class="cm">-- SQL Server</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> products
+<span class="kw">ORDER BY</span> id
+<span class="kw">OFFSET</span> 20 <span class="kw">ROWS FETCH NEXT</span> 10 <span class="kw">ROWS ONLY</span>;` },
+
+  { id:56, text:"What is a TRIGGER?", diff:"medium", topic:"Triggers",
+    answer:"A trigger is a stored procedure that automatically executes in response to INSERT, UPDATE, or DELETE events on a table. Types: BEFORE/AFTER triggers. Use cases: audit logging, enforcing business rules, cascading changes.",
+    code:`<span class="kw">CREATE TRIGGER</span> after_salary_update
+<span class="kw">AFTER UPDATE ON</span> employees
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="kw">INSERT INTO</span> salary_log(emp_id, old_sal, new_sal, changed_at)
+  <span class="kw">VALUES</span>(<span class="kw">OLD</span>.id, <span class="kw">OLD</span>.salary, <span class="kw">NEW</span>.salary, <span class="fn">NOW</span>());
+<span class="kw">END</span>;` },
+
+  { id:57, text:"What are ACID properties?", diff:"medium", topic:"Transactions",
+    answer:"Atomicity: all or nothing. Consistency: data moves from one valid state to another. Isolation: concurrent transactions don't interfere. Durability: committed transactions survive failures.", code:"" },
+
+  { id:58, text:"What is normalization? Explain 1NF, 2NF, 3NF.", diff:"medium", topic:"Design",
+    answer:"Normalization organizes data to reduce redundancy. 1NF: atomic values, no repeating groups. 2NF: 1NF + no partial dependency on a composite PK. 3NF: 2NF + no transitive dependency (non-key column depends only on the PK).", code:"" },
+
+  { id:59, text:"What is denormalization and when is it used?", diff:"medium", topic:"Design",
+    answer:"Denormalization intentionally introduces redundancy into normalized tables to improve read performance. Used in data warehouses, reporting systems, and OLAP workloads where JOIN overhead is too costly at scale.", code:"" },
+
+  { id:60, text:"What is the difference between OLTP and OLAP?", diff:"medium", topic:"Design",
+    answer:"OLTP: Online Transaction Processing — many small, fast read/write operations (e.g., banking). Normalized, row-oriented. OLAP: Online Analytical Processing — few complex queries over large datasets (e.g., BI dashboards). Denormalized, column-oriented, aggregation-heavy.", code:"" },
+
+  { id:61, text:"How does a database handle a FULL OUTER JOIN?", diff:"medium", topic:"Joins",
+    answer:"FULL OUTER JOIN returns all rows from both tables. Matched rows are combined; unmatched rows from either side have NULLs for the other table's columns. MySQL doesn't support it natively — simulate with LEFT JOIN UNION RIGHT JOIN.",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> A <span class="kw">FULL OUTER JOIN</span> B <span class="kw">ON</span> A.id = B.id;
+
+<span class="cm">-- MySQL workaround:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> A <span class="kw">LEFT JOIN</span> B <span class="kw">ON</span> A.id = B.id
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> A <span class="kw">RIGHT JOIN</span> B <span class="kw">ON</span> A.id = B.id;` },
+
+  { id:62, text:"How do you find employees with a salary above the department average?", diff:"medium", topic:"Classic",
+    answer:"",
+    code:`<span class="kw">SELECT</span> e.name, e.salary, e.dept_id
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> (
+  <span class="kw">SELECT</span> dept_id, <span class="fn">AVG</span>(salary) avg_sal
+  <span class="kw">FROM</span> employees <span class="kw">GROUP BY</span> dept_id
+) d <span class="kw">ON</span> e.dept_id = d.dept_id
+<span class="kw">WHERE</span> e.salary &gt; d.avg_sal;` },
+
+  { id:63, text:"What is the difference between a Function and a Stored Procedure?", diff:"medium", topic:"Procedures",
+    answer:"Functions must return a value, can be used in SELECT/WHERE, cannot modify data (in most DBs). Stored Procedures can return multiple result sets, can modify data, cannot be used inline in SELECT.", code:"" },
+
+  { id:64, text:"What is NTILE() window function?", diff:"medium", topic:"Window Fns",
+    answer:"NTILE(n) divides rows into n roughly equal buckets and assigns a bucket number to each row. Useful for quartile/percentile analysis.",
+    code:`<span class="kw">SELECT</span> name, salary,
+  <span class="fn">NTILE</span>(4) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary) <span class="kw">AS</span> quartile
+<span class="kw">FROM</span> employees;` },
+
+  { id:65, text:"How do you find gaps in sequential data (gap analysis)?", diff:"medium", topic:"Classic",
+    answer:"Use LAG() to compare each row's ID with the previous. Where the difference is greater than 1, there's a gap.",
+    code:`<span class="kw">SELECT</span> id + 1 <span class="kw">AS</span> gap_start,
+       next_id - 1 <span class="kw">AS</span> gap_end
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> id,
+    <span class="fn">LEAD</span>(id) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> id) <span class="kw">AS</span> next_id
+  <span class="kw">FROM</span> orders
+) t
+<span class="kw">WHERE</span> next_id - id &gt; 1;` },
+
+  { id:66, text:"How do you transpose rows to columns without PIVOT?", diff:"medium", topic:"Transformations",
+    answer:"Use conditional aggregation with CASE WHEN inside aggregate functions.",
+    code:`<span class="kw">SELECT</span>
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> quarter=<span class="str">'Q1'</span> <span class="kw">THEN</span> revenue <span class="kw">END</span>) Q1,
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> quarter=<span class="str">'Q2'</span> <span class="kw">THEN</span> revenue <span class="kw">END</span>) Q2,
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> quarter=<span class="str">'Q3'</span> <span class="kw">THEN</span> revenue <span class="kw">END</span>) Q3
+<span class="kw">FROM</span> sales;` },
+
+  { id:67, text:"What is isolation level in transactions?", diff:"medium", topic:"Transactions",
+    answer:"Isolation levels control visibility of uncommitted changes between concurrent transactions. Levels (least to most strict): READ UNCOMMITTED (dirty reads) → READ COMMITTED → REPEATABLE READ → SERIALIZABLE (no concurrency anomalies).", code:"" },
+
+  { id:68, text:"What are dirty read, non-repeatable read, and phantom read?", diff:"medium", topic:"Transactions",
+    answer:"Dirty read: reading uncommitted data. Non-repeatable read: same query returns different values within one transaction. Phantom read: same query returns different rows within one transaction (new rows inserted by another). Each higher isolation level prevents more of these.", code:"" },
+
+  { id:69, text:"How do you use STRING_AGG / GROUP_CONCAT to concatenate rows?", diff:"medium", topic:"Functions",
+    answer:"Aggregate rows into a single comma-separated string.",
+    code:`<span class="cm">-- MySQL</span>
+<span class="kw">SELECT</span> dept_id, <span class="fn">GROUP_CONCAT</span>(name <span class="kw">ORDER BY</span> name <span class="kw">SEPARATOR</span> <span class="str">', '</span>) <span class="kw">AS</span> members
+<span class="kw">FROM</span> employees <span class="kw">GROUP BY</span> dept_id;
+
+<span class="cm">-- SQL Server / PostgreSQL</span>
+<span class="kw">SELECT</span> dept_id, <span class="fn">STRING_AGG</span>(name, <span class="str">', '</span>) <span class="kw">AS</span> members
+<span class="kw">FROM</span> employees <span class="kw">GROUP BY</span> dept_id;` },
+
+  { id:70, text:"How do you calculate a year-over-year growth rate?", diff:"medium", topic:"Classic",
+    answer:"",
+    code:`<span class="kw">WITH</span> yearly <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">YEAR</span>(order_date) yr, <span class="fn">SUM</span>(amount) rev
+  <span class="kw">FROM</span> orders <span class="kw">GROUP BY</span> yr
+)
+<span class="kw">SELECT</span> yr, rev,
+  <span class="fn">LAG</span>(rev) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> yr) <span class="kw">AS</span> prev_rev,
+  <span class="fn">ROUND</span>((rev - <span class="fn">LAG</span>(rev) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> yr)) /
+    <span class="fn">LAG</span>(rev) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> yr) * 100, 2) <span class="kw">AS</span> yoy_pct
+<span class="kw">FROM</span> yearly;` },
+
+  { id:71, text:"What is a composite key?", diff:"medium", topic:"Constraints",
+    answer:"A composite key is a primary key made of two or more columns. Each individual column can repeat, but the combination must be unique. Used in junction/bridge tables for many-to-many relationships.",
+    code:`<span class="kw">CREATE TABLE</span> enrollments (
+  student_id <span class="fn">INT</span>,
+  course_id  <span class="fn">INT</span>,
+  <span class="kw">PRIMARY KEY</span> (student_id, course_id)
+);` },
+
+  { id:72, text:"How does EXPLAIN/EXPLAIN ANALYZE help in query optimization?", diff:"medium", topic:"Performance",
+    answer:"EXPLAIN shows the query execution plan — which indexes are used, join types, estimated rows, and cost. EXPLAIN ANALYZE (PostgreSQL) actually executes the query and reports real vs estimated metrics. Use it to identify sequential scans, missing indexes, or inefficient joins.", code:"" },
+
+  { id:73, text:"What is a Covering Index?", diff:"medium", topic:"Performance",
+    answer:"A covering index includes all columns referenced in a query (SELECT, WHERE, ORDER BY). The database can answer the query entirely from the index without touching the main table (index-only scan), dramatically improving performance.", code:"" },
+
+  { id:74, text:"How do you find customers who never placed an order?", diff:"medium", topic:"Classic",
+    answer:"",
+    code:`<span class="cm">-- Using LEFT JOIN (most efficient)</span>
+<span class="kw">SELECT</span> c.* <span class="kw">FROM</span> customers c
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id
+<span class="kw">WHERE</span> o.id <span class="kw">IS NULL</span>;
+
+<span class="cm">-- Using NOT EXISTS</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> customers c
+<span class="kw">WHERE NOT EXISTS</span> (
+  <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> orders <span class="kw">WHERE</span> customer_id = c.id
+);` },
+
+  { id:75, text:"What is the difference between INNER JOIN and CROSS JOIN performance?", diff:"medium", topic:"Performance",
+    answer:"INNER JOIN with an ON condition filters rows, producing only matching pairs — O(M×N) worst case but index-accelerated. CROSS JOIN produces M×N rows unconditionally — extremely expensive at scale. Always ensure JOINs have proper ON clauses to avoid accidental cross products.", code:"" },
+
+  // ─── HARD ────────────────────────────────────────────────
+  { id:76, text:"How do you solve the Islands and Gaps problem in SQL?", diff:"hard", topic:"Advanced",
+    answer:"The classic island problem: find groups of consecutive values. Use ROW_NUMBER trick: subtract ROW_NUMBER from the value — consecutive rows get the same constant, forming 'islands'.",
+    code:`<span class="kw">SELECT</span> <span class="fn">MIN</span>(login_date) <span class="kw">AS</span> island_start,
+       <span class="fn">MAX</span>(login_date) <span class="kw">AS</span> island_end,
+       <span class="fn">COUNT</span>(*) <span class="kw">AS</span> days
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> login_date,
+    login_date - <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> login_date) * <span class="kw">INTERVAL</span> <span class="str">'1 day'</span>
+    <span class="kw">AS</span> grp
+  <span class="kw">FROM</span> user_logins
+) t
+<span class="kw">GROUP BY</span> grp
+<span class="kw">ORDER BY</span> island_start;` },
+
+  { id:77, text:"Explain query optimization strategies for a slow query.", diff:"hard", topic:"Performance",
+    answer:"Systematic approach: 1) Run EXPLAIN ANALYZE to identify bottlenecks. 2) Add indexes on WHERE/JOIN/ORDER columns. 3) Use covering indexes. 4) Avoid SELECT * — fetch only needed columns. 5) Replace correlated subqueries with JOINs or CTEs. 6) Use EXISTS instead of IN for large sets. 7) Partition large tables. 8) Update statistics. 9) Rewrite ORs as UNIONs. 10) Check for implicit type conversions on index columns.", code:"" },
+
+  { id:78, text:"What is a Deadlock and how does the database resolve it?", diff:"hard", topic:"Transactions",
+    answer:"A deadlock occurs when two or more transactions each hold a lock the other needs, creating a circular wait. Databases resolve it by detecting the cycle and killing the transaction with the least cost (victim), which rolls back and returns an error. Prevention: always acquire locks in a consistent order.",
+    code:`<span class="cm">-- Session 1                  Session 2</span>
+<span class="cm">-- LOCK TABLE A               LOCK TABLE B</span>
+<span class="cm">-- wait for B ...             wait for A ...</span>
+<span class="cm">-- ← Deadlock → DB kills one session</span>` },
+
+  { id:79, text:"How do you implement a slowly changing dimension (SCD Type 2) in SQL?", diff:"hard", topic:"Data Warehouse",
+    answer:"SCD Type 2 tracks history by inserting a new row for each change with effective_from/effective_to dates and a current_flag. The old row's effective_to is updated and current_flag set to 0.",
+    code:`<span class="kw">UPDATE</span> dim_customer <span class="kw">SET</span> current_flag=0, effective_to=<span class="fn">GETDATE</span>()
+<span class="kw">WHERE</span> customer_id=@id <span class="kw">AND</span> current_flag=1;
+
+<span class="kw">INSERT INTO</span> dim_customer
+  (customer_id, name, address, effective_from, effective_to, current_flag)
+<span class="kw">VALUES</span>
+  (@id, @name, @new_addr, <span class="fn">GETDATE</span>(), <span class="str">'9999-12-31'</span>, 1);` },
+
+  { id:80, text:"What is the MERGE statement and when do you use it?", diff:"hard", topic:"DML",
+    answer:"MERGE (UPSERT) updates existing rows and inserts new ones in a single atomic statement. Also called UPSERT. Ideal for ETL, sync operations, and staging-to-production data loads.",
+    code:`<span class="kw">MERGE INTO</span> target t
+<span class="kw">USING</span> source s <span class="kw">ON</span> t.id = s.id
+<span class="kw">WHEN MATCHED THEN</span>
+  <span class="kw">UPDATE SET</span> t.name=s.name, t.salary=s.salary
+<span class="kw">WHEN NOT MATCHED THEN</span>
+  <span class="kw">INSERT</span> (id, name, salary) <span class="kw">VALUES</span> (s.id, s.name, s.salary)
+<span class="kw">WHEN NOT MATCHED BY SOURCE THEN</span>
+  <span class="kw">DELETE</span>;` },
+
+  { id:81, text:"How do you calculate a median in SQL without built-in functions?", diff:"hard", topic:"Classic",
+    answer:"Use PERCENTILE_CONT (if available), or use ROW_NUMBER and COUNT to pick the middle row.",
+    code:`<span class="cm">-- Using PERCENTILE_CONT (modern)</span>
+<span class="kw">SELECT</span> <span class="fn">PERCENTILE_CONT</span>(0.5)
+  <span class="kw">WITHIN GROUP</span> (<span class="kw">ORDER BY</span> salary) <span class="kw">AS</span> median
+<span class="kw">FROM</span> employees;
+
+<span class="cm">-- Without it</span>
+<span class="kw">SELECT</span> <span class="fn">AVG</span>(salary) <span class="kw">AS</span> median <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> salary, <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary) rn,
+    <span class="fn">COUNT</span>(*) <span class="kw">OVER</span> () cnt
+  <span class="kw">FROM</span> employees
+) t <span class="kw">WHERE</span> rn <span class="kw">IN</span> ((cnt+1)/2, (cnt+2)/2);` },
+
+  { id:82, text:"Explain partitioning in databases. What are the types?", diff:"hard", topic:"Performance",
+    answer:"Partitioning splits a large table into smaller physical pieces. Types: Range (by value range — dates), List (by explicit values — region), Hash (by hash of key — uniform distribution), Composite (combination). Benefits: partition pruning, parallelism, faster maintenance, archival.", code:"" },
+
+  { id:83, text:"How do you find the top N products per category?", diff:"hard", topic:"Classic",
+    answer:"Use ROW_NUMBER() or DENSE_RANK() with PARTITION BY category to rank within each category, then filter.",
+    code:`<span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> category, product, revenue,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span>
+      (<span class="kw">PARTITION BY</span> category <span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>) rn
+  <span class="kw">FROM</span> products
+) t
+<span class="kw">WHERE</span> rn &lt;= 3;  <span class="cm">-- top 3 per category</span>` },
+
+  { id:84, text:"What is a Bitmap Index and when is it used?", diff:"hard", topic:"Performance",
+    answer:"A bitmap index stores a bit vector for each distinct value in a column. Extremely efficient for low-cardinality columns (gender, status, region) in OLAP/read-heavy workloads. Poor for OLTP with frequent updates (locking granularity). Used extensively in data warehouses.", code:"" },
+
+  { id:85, text:"How does MVCC (Multi-Version Concurrency Control) work?", diff:"hard", topic:"Internals",
+    answer:"MVCC allows readers and writers to not block each other. Each transaction sees a snapshot of data as it was at the start of the transaction. Writes create new versions of rows instead of overwriting; old versions are kept until no transaction needs them (VACUUM/garbage collection). Used in PostgreSQL, Oracle, MySQL InnoDB.", code:"" },
+
+  { id:86, text:"How do you detect and resolve a performance problem caused by parameter sniffing?", diff:"hard", topic:"Performance",
+    answer:"Parameter sniffing: SQL Server caches a plan based on initial parameters; if those aren't representative, later calls with different params use a bad plan. Solutions: OPTION(RECOMPILE), OPTIMIZE FOR, local variables to prevent sniffing, or clearing plan cache selectively.",
+    code:`<span class="cm">-- Force recompile for this execution</span>
+<span class="kw">EXEC</span> GetOrders @CustID=12345 <span class="kw">WITH RECOMPILE</span>;
+
+<span class="cm">-- Or hint</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders <span class="kw">WHERE</span> customer_id=@id
+<span class="kw">OPTION</span>(<span class="kw">OPTIMIZE FOR</span> (@id = 9999));` },
+
+  { id:87, text:"Write a query to find managers with more than 5 direct reports.", diff:"hard", topic:"Classic",
+    answer:"",
+    code:`<span class="kw">SELECT</span> m.name <span class="kw">AS</span> manager, <span class="fn">COUNT</span>(e.id) <span class="kw">AS</span> reports
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.id
+<span class="kw">GROUP BY</span> m.id, m.name
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(e.id) &gt; 5
+<span class="kw">ORDER BY</span> reports <span class="kw">DESC</span>;` },
+
+  { id:88, text:"What is a B-Tree index and how does it work internally?", diff:"hard", topic:"Internals",
+    answer:"A B-Tree (Balanced Tree) index maintains sorted data in a tree structure. Leaf nodes hold the actual data pointers. Each lookup traverses from root → branch → leaf in O(log n). Supports range queries, ORDER BY, and equality. The tree stays balanced through splits and merges on insert/delete.", code:"" },
+
+  { id:89, text:"How do you write an efficient query to find consecutive date ranges of active users?", diff:"hard", topic:"Advanced",
+    answer:"Island problem variant: assign each date a group using DATE - ROW_NUMBER(). Rows in the same group form a consecutive streak.",
+    code:`<span class="kw">WITH</span> grp <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> user_id, login_date,
+    login_date - (<span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span>
+      (<span class="kw">PARTITION BY</span> user_id <span class="kw">ORDER BY</span> login_date)) * <span class="kw">INTERVAL</span> <span class="str">'1 day'</span>
+    <span class="kw">AS</span> island_key
+  <span class="kw">FROM</span> logins
+)
+<span class="kw">SELECT</span> user_id,
+  <span class="fn">MIN</span>(login_date) streak_start,
+  <span class="fn">MAX</span>(login_date) streak_end,
+  <span class="fn">COUNT</span>(*) streak_len
+<span class="kw">FROM</span> grp
+<span class="kw">GROUP BY</span> user_id, island_key
+<span class="kw">ORDER BY</span> user_id, streak_start;` },
+
+  { id:90, text:"What is table sharding and how does it differ from partitioning?", diff:"hard", topic:"Architecture",
+    answer:"Partitioning splits one logical table into physical segments on the SAME server. Sharding splits data across MULTIPLE servers (horizontal scaling). Sharding is an application-level architecture decision; it distributes load but adds complexity (cross-shard queries, transactions). Partitioning is transparent to the application.", code:"" },
+
+  { id:91, text:"How do you implement a running balance (like a bank ledger)?", diff:"hard", topic:"Advanced",
+    answer:"",
+    code:`<span class="kw">SELECT</span> txn_date, amount, txn_type,
+  <span class="fn">SUM</span>(
+    <span class="kw">CASE WHEN</span> txn_type=<span class="str">'credit'</span> <span class="kw">THEN</span> amount <span class="kw">ELSE</span> -amount <span class="kw">END</span>
+  ) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> txn_date, id
+           <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+  ) <span class="kw">AS</span> balance
+<span class="kw">FROM</span> transactions;` },
+
+  { id:92, text:"What are the dangers of using SELECT * in production?", diff:"hard", topic:"Performance",
+    answer:"SELECT * retrieves all columns including unnecessary ones — more network I/O, larger memory usage, prevents covering index scans, breaks queries if columns are added/dropped, exposes sensitive data, and the optimizer cannot optimize unknown column sets. Always specify needed columns explicitly.", code:"" },
+
+  { id:93, text:"How do you query a JSON column in SQL?", diff:"hard", topic:"Advanced",
+    answer:"Modern databases support JSON natively with extraction operators.",
+    code:`<span class="cm">-- PostgreSQL</span>
+<span class="kw">SELECT</span> data-&gt;&gt;<span class="str">'name'</span> <span class="kw">AS</span> name,
+       data-&gt;<span class="str">'address'</span>-&gt;&gt;<span class="str">'city'</span> <span class="kw">AS</span> city
+<span class="kw">FROM</span> customers;
+
+<span class="cm">-- MySQL</span>
+<span class="kw">SELECT</span> <span class="fn">JSON_EXTRACT</span>(data, <span class="str">'$.name'</span>),
+       <span class="fn">JSON_UNQUOTE</span>(<span class="fn">JSON_EXTRACT</span>(data, <span class="str">'$.address.city'</span>))
+<span class="kw">FROM</span> customers;` },
+
+  { id:94, text:"What is a Columnstore Index and when should you use it?", diff:"hard", topic:"Performance",
+    answer:"Columnstore indexes store data by column instead of row, enabling high compression and batch-mode execution for analytical queries. Ideal for data warehouse fact tables, aggregation queries over millions of rows, and OLAP workloads. Can be clustered or non-clustered (SQL Server).", code:"" },
+
+  { id:95, text:"How does a Hash Join work and when is it chosen by the optimizer?", diff:"hard", topic:"Internals",
+    answer:"A hash join builds a hash table from the smaller input (build phase), then probes it with rows from the larger input. O(M+N) complexity. The optimizer chooses hash join for large unsorted datasets without useful indexes. Nested loop join is preferred for small inputs; merge join for sorted inputs.", code:"" },
+
+  { id:96, text:"How do you handle a many-to-many relationship in SQL?", diff:"hard", topic:"Design",
+    answer:"Use a junction (bridge) table with foreign keys to both entities. Optionally add attributes to the junction table for relationship metadata.",
+    code:`<span class="kw">CREATE TABLE</span> student_courses (
+  student_id <span class="fn">INT</span> <span class="kw">REFERENCES</span> students(id),
+  course_id  <span class="fn">INT</span> <span class="kw">REFERENCES</span> courses(id),
+  enrolled_on <span class="fn">DATE</span>,
+  <span class="kw">PRIMARY KEY</span> (student_id, course_id)
+);` },
+
+  { id:97, text:"What is a Lateral Join (LATERAL / CROSS APPLY)?", diff:"hard", topic:"Advanced",
+    answer:"A LATERAL join (CROSS APPLY in SQL Server) allows the right side to reference columns from the left table — it's like a correlated subquery but can return multiple rows. Used for top-N per group, applying table-valued functions per row, and complex per-row calculations.",
+    code:`<span class="cm">-- Top 2 orders per customer</span>
+<span class="kw">SELECT</span> c.name, o.order_id, o.amount
+<span class="kw">FROM</span> customers c
+<span class="kw">CROSS APPLY</span> (
+  <span class="kw">SELECT TOP</span> 2 order_id, amount
+  <span class="kw">FROM</span> orders <span class="kw">WHERE</span> customer_id = c.id
+  <span class="kw">ORDER BY</span> amount <span class="kw">DESC</span>
+) o;` },
+
+  { id:98, text:"Write a query to find the longest consecutive login streak for each user.", diff:"hard", topic:"Advanced",
+    answer:"",
+    code:`<span class="kw">WITH</span> grps <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> user_id, login_date,
+    login_date - <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span>
+      (<span class="kw">PARTITION BY</span> user_id <span class="kw">ORDER BY</span> login_date) * <span class="kw">INTERVAL</span> <span class="str">'1 day'</span>
+    <span class="kw">AS</span> grp
+  <span class="kw">FROM</span> logins
+),
+streaks <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> user_id, grp, <span class="fn">COUNT</span>(*) streak_len
+  <span class="kw">FROM</span> grps <span class="kw">GROUP BY</span> user_id, grp
+)
+<span class="kw">SELECT</span> user_id, <span class="fn">MAX</span>(streak_len) <span class="kw">AS</span> max_streak
+<span class="kw">FROM</span> streaks
+<span class="kw">GROUP BY</span> user_id;` },
+
+  { id:99, text:"What is the difference between optimistic and pessimistic locking?", diff:"hard", topic:"Transactions",
+    answer:"Pessimistic locking: locks the resource before reading/writing, preventing other transactions from modifying it (using SELECT FOR UPDATE). Causes contention but guarantees no conflicts. Optimistic locking: reads without locking, checks a version number or timestamp at write time; if changed, retries. Better for low-contention, high-read workloads.", code:"" },
+
+  { id:100, text:"How do you write a query to detect fraudulent transactions (back-to-back transactions within 1 minute)?", diff:"hard", topic:"Advanced",
+    answer:"",
+    code:`<span class="kw">SELECT</span> a.txn_id, a.user_id, a.txn_time,
+       b.txn_id <span class="kw">AS</span> next_txn, b.txn_time <span class="kw">AS</span> next_time
+<span class="kw">FROM</span> transactions a
+<span class="kw">JOIN</span> transactions b
+  <span class="kw">ON</span>  a.user_id = b.user_id
+  <span class="kw">AND</span> b.txn_time &gt; a.txn_time
+  <span class="kw">AND</span> b.txn_time &lt;= a.txn_time + <span class="kw">INTERVAL</span> <span class="str">'1 minute'</span>
+  <span class="kw">AND</span> a.txn_id &lt;&gt; b.txn_id;` }
+];
+
+// ─── Render ───────────────────────────────────────────────
+let opened = new Set();
+let currentFilter = 'all';
+let currentSearch = '';
+
+function buildHTML(qs) {
+  if (!qs.length) return '<div class="no-results">// No questions matched your search.</div>';
+
+  const sections = { easy: [], medium: [], hard: [] };
+  qs.forEach(q => sections[q.diff].push(q));
+
+  let html = '';
+
+  const titles = { easy:'Easy', medium:'Medium', hard:'Hard' };
+  const pillClass = { easy:'pill-easy', medium:'pill-medium', hard:'pill-hard' };
+  const counts = { easy: questions.filter(q=>q.diff==='easy').length,
+                   medium: questions.filter(q=>q.diff==='medium').length,
+                   hard: questions.filter(q=>q.diff==='hard').length };
+
+  ['easy','medium','hard'].forEach(diff => {
+    if (!sections[diff].length) return;
+    html += `
+    <div class="section-head">
+      <h2 style="color:var(--${diff === 'easy' ? 'easy' : diff === 'medium' ? 'medium' : 'hard'})">${titles[diff]}</h2>
+      <div class="section-line"></div>
+      <span class="section-pill ${pillClass[diff]}">${sections[diff].length} / ${counts[diff]}</span>
+    </div>`;
+
+    sections[diff].forEach(q => {
+      const isOpen = opened.has(q.id) ? 'open' : '';
+      html += `
+      <div class="q-card ${diff} ${isOpen}" id="card-${q.id}" onclick="toggleCard(${q.id}, event)">
+        <div class="q-header">
+          <span class="q-num">#${String(q.id).padStart(2,'0')}</span>
+          <span class="q-text">${q.text}</span>
+          <span class="q-difficulty diff-${diff}">${diff}</span>
+          <svg class="q-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="q-answer">
+          <span class="topic-tag">${q.topic}</span>
+          ${q.answer ? `<p>${q.answer}</p>` : ''}
+          ${q.code ? `<code>${q.code}</code>` : ''}
+        </div>
+      </div>`;
+    });
+  });
+  return html;
+}
+
+function applyFilters() {
+  let qs = questions;
+  if (currentFilter !== 'all') qs = qs.filter(q => q.diff === currentFilter);
+  if (currentSearch) {
+    const s = currentSearch.toLowerCase();
+    qs = qs.filter(q => q.text.toLowerCase().includes(s) || q.topic.toLowerCase().includes(s));
+  }
+  document.getElementById('questions-container').innerHTML = buildHTML(qs);
+  updateProgress();
+}
+
+function filter(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function search(val) {
+  currentSearch = val;
+  applyFilters();
+}
+
+function toggleCard(id, e) {
+  const card = document.getElementById('card-' + id);
+  const isOpen = card.classList.toggle('open');
+  if (isOpen) opened.add(id); else opened.delete(id);
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round(opened.size / questions.length * 100);
+  document.getElementById('progress-text').textContent = `${opened.size} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// Initial render
+applyFilters();
+</script>
+</body>
+</html>
